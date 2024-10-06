@@ -1,2 +1,2 @@
-- app/handlers/auth.go
-Mocked user verification, need to replace with actual DB check
+- Need to create main page and posts
+- Handler for creating posts (only admin)

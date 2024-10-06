@@ -20,8 +20,17 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	// TODO: mocked user verification, need to replace with actual DB check
-	if user.Username != "admin" || user.Password != "password" {
+	query := `SELECT id, password FROM users WHERE username = $1`
+	var storedUser models.User
+	err := config.DB.QueryRow(context.Background(), query, user.Username).Scan(&storedUser.ID, &storedUser.Password)
+	if err != nil {
+		log.Printf("Error fetching user from the database: %v\n", err)
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Invalid credentials",
+		})
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(user.Password)); err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Invalid credentials",
 		})
