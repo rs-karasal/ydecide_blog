@@ -1,75 +1,63 @@
 package handlers
 
 import (
-	"context"
-	"log"
-	"time"
-
 	"github.com/gofiber/fiber/v2"
+	"github.com/rs-karasal/ydecide_blog/app/dto"
 	"github.com/rs-karasal/ydecide_blog/app/models"
-	"github.com/rs-karasal/ydecide_blog/config"
-	"github.com/rs-karasal/ydecide_blog/pkg/jwt"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/rs-karasal/ydecide_blog/app/utils"
+	"github.com/rs-karasal/ydecide_blog/database"
 )
 
-func Login(c *fiber.Ctx) error {
-	user := new(models.User)
-	if err := c.BodyParser(user); err != nil {
+func Register(c *fiber.Ctx) error {
+	var req dto.AuthRequest
+	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Cannot parse JSON",
+			"mmessage": err.Error(),
 		})
 	}
-
-	query := `SELECT id, password FROM users WHERE username = $1`
-	var storedUser models.User
-	err := config.DB.QueryRow(context.Background(), query, user.Username).Scan(&storedUser.ID, &storedUser.Password)
-	if err != nil {
-		log.Printf("Error fetching user from the database: %v\n", err)
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Invalid credentials",
-		})
+	user := models.User{
+		Username:     req.Username,
+		PasswordHash: utils.GeneratePassword(req.Password),
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(user.Password)); err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Invalid credentials",
+	res := database.DB.Create(&user)
+	if res.Error != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": res.Error.Error(),
 		})
 	}
-
-	// Generate JWT token
-	token, err := jwt.GenerateToken(user.Username, time.Hour*24)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Could not login",
-		})
-	}
-
-	return c.JSON(fiber.Map{"token": token})
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "user created",
+	})
 }
 
-func Register(c *fiber.Ctx) error {
-	user := new(models.User)
-	if err := c.BodyParser(user); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Cannot parse JSON",
+func Login(c *fiber.Ctx) error {
+	var req dto.AuthRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	var user models.User
+	res := database.DB.Where("username = ?", req.Username).First(&user)
+	if res.Error != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"message": "user not found",
+		})
+	}
+	if !utils.ComparePassword(user.PasswordHash, req.Password) {
+		return c.Status(400).JSON(fiber.Map{
+			"message": "incorrect password",
 		})
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	token, err := utils.GenerateToken(user.ID)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Could not hash password",
+		return c.Status(500).JSON(fiber.Map{
+			"message": err.Error(),
 		})
 	}
-
-	query := `INSERT INTO users (username, password) VALUES ($1, $2)`
-	_, err = config.DB.Exec(context.Background(), query, user.Username, string(hashedPassword))
-	if err != nil {
-		log.Printf("Error insrting user into the database: %v\n", err)
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Could not register user",
-		})
-	}
-
-	return c.JSON(fiber.Map{"message": "User registered successfully"})
+	return c.JSON(fiber.Map{
+		"token": token,
+	})
 }

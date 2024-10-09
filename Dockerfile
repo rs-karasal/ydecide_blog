@@ -15,6 +15,7 @@ FROM gcr.io/distroless/base
 WORKDIR /root/
 
 COPY --from=builder /app/main .
+COPY --from=builder /app/.env .
 
 EXPOSE 3000
 

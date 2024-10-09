@@ -2,24 +2,21 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
-	"github.com/rs-karasal/ydecide_blog/app/routes"
-	"github.com/rs-karasal/ydecide_blog/config"
+	"github.com/rs-karasal/ydecide_blog/app/router"
+	"github.com/rs-karasal/ydecide_blog/database"
 )
 
 func main() {
-	if os.Getenv("DOCKER_ENV") != "true" {
-		err := godotenv.Load()
-		if err != nil {
-			log.Println("Warning: Error loading .env file, using environment variables from Docker instead")
-		}
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file")
 	}
 
-	config.ConnectDatabase()
+	database.Connect()
 
 	app := fiber.New()
 
@@ -29,7 +26,7 @@ func main() {
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 	}))
 
-	routes.SetupRoutes(app)
+	router.SetupRoutes(app)
 
-	app.Listen(":3000")
+	log.Fatal(app.Listen(":3000"))
 }
