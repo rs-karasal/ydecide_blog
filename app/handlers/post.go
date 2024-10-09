@@ -13,8 +13,8 @@ import (
 var validate = validator.New()
 
 func CreatePost(c *fiber.Ctx) error {
-	var req dto.PostRequest
 
+	var req dto.PostRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Cannot parse request body",
@@ -30,7 +30,8 @@ func CreatePost(c *fiber.Ctx) error {
 
 	post := models.Post{
 		Title:     req.Title,
-		AuthorID:  req.AuthorID,
+		Content:   req.Content,
+		AuthorID:  1,
 		CreatedAt: time.Now(),
 	}
 
@@ -40,7 +41,10 @@ func CreatePost(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(post)
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "Post created successfully",
+		"post":    post,
+	})
 }
 
 func GetPosts(c *fiber.Ctx) error {
@@ -95,7 +99,7 @@ func UpdatePost(c *fiber.Ctx) error {
 
 	// Update the post fields
 	post.Title = req.Title
-	post.AuthorID = req.AuthorID
+	post.Content = req.Content
 
 	// Save the updated post to the database
 	if result := database.DB.Save(&post); result.Error != nil {
