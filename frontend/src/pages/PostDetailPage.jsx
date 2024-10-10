@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import axiosInstance from "../axiosInstance";
 
 const PostDetailPage = () => {
   const { id } = useParams();
@@ -10,9 +11,7 @@ const PostDetailPage = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/posts/${id}`,
-        );
+        const response = await axiosInstance.get(`/api/posts/${id}`);
         setPost(response.data);
       } catch (error) {
         console.error("Failed to fetch post", error);

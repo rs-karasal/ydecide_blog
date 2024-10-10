@@ -2,6 +2,7 @@ import { Form, Input, Button, notification } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../axiosInstance";
 
 const CreatePostPage = () => {
   const [loading, setLoading] = useState(false);
@@ -11,15 +12,11 @@ const CreatePostPage = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post(
-        "http://localhost:3000/api/posts",
-        values,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await axiosInstance.post("/api/posts", values, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       notification.success({
         message: "Post created",
         description: "Your post has been created successfully.",
