@@ -1,2 +1,2 @@
-- Need to create main page and posts
-- Handler for creating posts (only admin)
+- Need to create dev and deploy cinfigurations
+- Fix issues with create post
