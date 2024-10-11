@@ -1,2 +1,2 @@
-- Need to create dev and deploy cinfigurations
+- Need to create dev and deploy configurations
 - Fix issues with create post

@@ -14,7 +14,8 @@ const CreatePostPage = () => {
       const token = localStorage.getItem("token");
       const response = await axiosInstance.post("/api/posts", values, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
       });
       notification.success({
