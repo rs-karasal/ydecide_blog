@@ -12,12 +12,14 @@ const CreatePostPage = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
+      console.log(`Token get from localStorage: ${token}`)
       const response = await axiosInstance.post("/api/posts", values, {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
       });
+      console.log(`Token after request: ${token}`)
       notification.success({
         message: "Post created",
         description: "Your post has been created successfully.",
