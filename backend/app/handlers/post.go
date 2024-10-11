@@ -5,6 +5,8 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/rs-karasal/ydecide_blog/app/dto"
 	"github.com/rs-karasal/ydecide_blog/app/models"
 	"github.com/rs-karasal/ydecide_blog/database"
@@ -28,10 +30,20 @@ func CreatePost(c *fiber.Ctx) error {
 		})
 	}
 
+	userToken := c.Locals("user").(*jwt.Token)
+	claims := userToken.Claims.(jwt.MapClaims)
+
+	authorID, err := uuid.Parse(claims["user_id"].(string))
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Invalid user ID in token",
+		})
+	}
+
 	post := models.Post{
 		Title:     req.Title,
 		Content:   req.Content,
-		AuthorID:  1,
+		AuthorID:  authorID,
 		CreatedAt: time.Now(),
 	}
 
@@ -61,9 +73,16 @@ func GetPosts(c *fiber.Ctx) error {
 
 func GetPost(c *fiber.Ctx) error {
 	id := c.Params("id")
+
+	postID, err := uuid.Parse(id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid post ID format",
+		})
+	}
 	var post models.Post
 
-	if result := database.DB.Find(&post, id); result.Error != nil {
+	if result := database.DB.Find(&post, "id = ?", postID); result.Error != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "Post not found",
 		})
