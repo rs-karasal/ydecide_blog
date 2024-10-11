@@ -15,7 +15,7 @@ func GenerateToken(id uint) (string, error) {
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 	})
 
-	t, err := token.SignedString(jwtSecret)
+	t, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
 		return "", err
 	}
