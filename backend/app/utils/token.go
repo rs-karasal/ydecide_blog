@@ -5,14 +5,15 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
-func GenerateToken(id uint) (string, error) {
+func GenerateToken(id uuid.UUID) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": id,
-		"exp":     time.Now().Add(time.Hour * 24).Unix(),
+		"exp":     time.Now().AddDate(1, 0, 0).Unix(),
 	})
 
 	t, err := token.SignedString(jwtSecret)
