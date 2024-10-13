@@ -7,6 +7,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "Home - YouDecide";
     const fetchPosts = async () => {
       try {
         const response = await axiosInstance.get("/api/posts");

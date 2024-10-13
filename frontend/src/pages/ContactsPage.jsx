@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import {
   InstagramOutlined,
   SendOutlined,
@@ -10,6 +10,11 @@ import coverPhoto from "../assets/images/contacts-cover-image.jpg";
 const { Meta } = Card;
 
 const ContactsPage = () => {
+  
+  useEffect(() => {
+    document.title = "Contacts";
+  }, []);
+
   const openLink = (url) => {
     window.open(url, "_blank");
   };
