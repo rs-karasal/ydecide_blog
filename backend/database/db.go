@@ -5,7 +5,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/rs-karasal/ydecide_blog/app/models"
+	"github.com/rs-karasal/ydecide_blog/app/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -25,7 +27,55 @@ func Connect() {
 	}
 	fmt.Println("Connection Opened to Database")
 
-	// Migrate schemas
-	DB.AutoMigrate(&models.User{}, &models.Post{})
-	fmt.Println("Database Migrated")
+	MigrateSchemas()
+
+	CreateSuperUser()
+}
+
+func MigrateSchemas() {
+	err := DB.AutoMigrate(&models.User{}, &models.Post{}, &models.LifeCircle{})
+	if err != nil {
+		log.Fatalf("failed to migrate schemas: %v", err)
+	}
+	fmt.Println("Database schemas migrated")
+}
+
+func CreateSuperUser() {
+	superDeciderUUID := os.Getenv("SUPERUSER_UUID")
+	if superDeciderUUID == "" {
+		log.Fatalf("SUPERUSER_UUID is not set in environment variables")
+	}
+
+	nullUUID, err := uuid.Parse(superDeciderUUID)
+	fmt.Println("nullUUID: ", nullUUID)
+	if err != nil {
+		log.Fatalf("failed to parse SUPERUSER_UUID: %v", err)
+	}
+
+	var user models.User
+	err = DB.First(&user, "id = ?", nullUUID).Error
+	if err == gorm.ErrRecordNotFound {
+		superDeciderName := os.Getenv("SUPERUSER_USERNAME")
+		superDeciderPassword := os.Getenv("SUPERUSER_PASSWORD")
+
+		if superDeciderName == "" || superDeciderPassword == "" {
+			log.Fatalf("Superuser credentials not found in environment variables")
+		}
+
+		superDecider := models.User{
+			ID:           nullUUID,
+			Username:     superDeciderName,
+			PasswordHash: utils.GeneratePassword(superDeciderPassword),
+		}
+
+		if err := DB.Create(&superDecider).Error; err != nil {
+			log.Fatalf("failed to create superuser: %v", err)
+		} else {
+			fmt.Println("Superuser created successfully")
+		}
+	} else if err != nil {
+		log.Fatalf("failed to check for superuser: %v", err)
+	} else {
+		fmt.Println("Superuser already exists")
+	}
 }

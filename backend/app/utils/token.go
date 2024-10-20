@@ -20,10 +20,12 @@ func getJWTSecret() string {
 }
 
 func GenerateToken(id uuid.UUID) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": id.String(),
-		"exp":     time.Now().AddDate(0, 0, 1).Unix(),
-	})
+	claims := jwt.MapClaims{
+		"user_id": id,
+		"exp":     time.Now().AddDate(0, 0, 3).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	t, err := token.SignedString(jwtSecret)
 	if err != nil {

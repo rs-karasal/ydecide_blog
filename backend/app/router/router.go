@@ -12,7 +12,7 @@ func SetupRoutes(app *fiber.App) {
 	// Auth
 	auth := api.Group("/auth")
 	auth.Post("/login", handlers.Login)
-	auth.Post("/register", handlers.Register)
+	// auth.Post("/register", handlers.Register)
 
 	// Post
 	post := api.Group("/posts")
@@ -23,4 +23,9 @@ func SetupRoutes(app *fiber.App) {
 	post.Post("/", handlers.CreatePost)
 	post.Patch("/:id", handlers.UpdatePost)
 	post.Delete("/:id", handlers.DeletePost)
+
+	lifeCircle := api.Group("/life-circle")
+	lifeCircle.Use(middleware.JWTProtected)
+	lifeCircle.Post("/create", handlers.CreateLifeCircle)
+	lifeCircle.Patch("/update", handlers.UpdateLifeCircle)
 }
