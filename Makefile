@@ -15,14 +15,14 @@ down-v:
 
 
 
-up-deploy:
-	@echo "Starting services with $(ENV_FILE_LOCAL)"
-	@export ENV_FILE=$(ENV_FILE_LOCAL) && docker-compose --env-file $(ENV_FILE_LOCAL) up --build -d
+up-d:
+	@echo "Starting services with $(ENV_FILE_DEPLOY)"
+	@export ENV_FILE=$(ENV_FILE_DEPLOY) && docker-compose --env-file $(ENV_FILE_DEPLOY) up --build -d
 
-down-deploy:
+down-d:
 	@echo "Stopping services with $(ENV_FILE_LOCAL)"
-	@export ENV_FILE=$(ENV_FILE_LOCAL) && docker-compose --env-file $(ENV_FILE_LOCAL) down
+	@export ENV_FILE=$(ENV_FILE_DEPLOY) && docker-compose --env-file $(ENV_FILE_DEPLOY) down
 
-down-v-deploy:
+down-d-v:
 	@echo "Stopping services with $(ENV_FILE_LOCAL)"
-	@export ENV_FILE=$(ENV_FILE_LOCAL) && docker-compose --env-file $(ENV_FILE_LOCAL) down -v
+	@export ENV_FILE=$(ENV_FILE_DEPLOY) && docker-compose --env-file $(ENV_FILE_DEPLOY) down -v
