@@ -6,6 +6,7 @@ import CreatePostPage from "./pages/CreatePostPage";
 import ThemeSwitcher from "./components/ThemeSwitcher";
 import TopMenu from "./components/TopMenu";
 import ContactsPage from "./pages/ContactsPage";
+import LifeCirclePage from "./pages/LifeCirclePage";
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
           <Route path="/posts/:id" element={<PostDetailPage />} />
           <Route path="/create-post" element={<CreatePostPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/life-circle" element={<div>Life Cirlcle</div>} />
+          <Route path="/life-circle" element={<LifeCirclePage />} />
           <Route path="/profile" element={<div>User profile</div>} />
           <Route path="/contacts" element={<ContactsPage />} />
         </Routes>

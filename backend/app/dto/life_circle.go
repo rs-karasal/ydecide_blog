@@ -10,3 +10,14 @@ type UpdateLifeCircleRequest struct {
 	PhysicalEnvironment     int `json:"physical_environment" validate:"min=0,max=10"`
 	EmotionsAndFullfillment int `json:"emotions_and_fullfillment" validate:"min=0,max=10"`
 }
+
+type LifeCircleResponse struct {
+	HealthAndBody           int `json:"health_and_body"`
+	LoveAndRelationships    int `json:"love_and_relationships"`
+	FamilyAndFriends        int `json:"family_and_friends"`
+	PersonalGrowth          int `json:"personal_growth"`
+	CareerAndFinance        int `json:"career_and_finance"`
+	JoyAndRelax             int `json:"joy_and_relax"`
+	PhysicalEnvironment     int `json:"physical_environment"`
+	EmotionsAndFullfillment int `json:"emotions_and_fullfillment"`
+}

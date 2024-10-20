@@ -26,8 +26,19 @@ func GetLifeCircle(c *fiber.Ctx) error {
 		})
 	}
 
+	response := dto.LifeCircleResponse{
+		HealthAndBody:           lifeCircle.HealthAndBody,
+		LoveAndRelationships:    lifeCircle.LoveAndRelationships,
+		FamilyAndFriends:        lifeCircle.FamilyAndFriends,
+		PersonalGrowth:          lifeCircle.PersonalGrowth,
+		CareerAndFinance:        lifeCircle.CareerAndFinance,
+		JoyAndRelax:             lifeCircle.JoyAndRelax,
+		PhysicalEnvironment:     lifeCircle.PhysicalEnvironment,
+		EmotionsAndFullfillment: lifeCircle.EmotionsAndFullfillment,
+	}
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"life_circle": lifeCircle,
+		"life_circle": response,
 	})
 }
 
