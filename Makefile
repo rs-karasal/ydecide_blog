@@ -1,5 +1,5 @@
 ENV_FILE_LOCAL=.env.local
-ENV_FILE_DEPLOY=.env.local
+ENV_FILE_DEPLOY=.env.prod
 
 up:
 	@echo "Starting services with $(ENV_FILE_LOCAL)"
