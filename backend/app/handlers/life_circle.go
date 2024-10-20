@@ -12,6 +12,25 @@ import (
 	"gorm.io/gorm"
 )
 
+func GetLifeCircle(c *fiber.Ctx) error {
+	var lifeCircle models.LifeCircle
+
+	if err := database.DB.Where("user_id = ?", config.SuperDeciderUUID).First(&lifeCircle).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": "LifeCircle not found for this user",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to retrieve life circle",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"life_circle": lifeCircle,
+	})
+}
+
 func CreateLifeCircle(c *fiber.Ctx) error {
 	var lifeCircle models.LifeCircle
 	if err := database.DB.Where("user_id = ?", config.SuperDeciderUUID).First(&lifeCircle).Error; err != gorm.ErrRecordNotFound {

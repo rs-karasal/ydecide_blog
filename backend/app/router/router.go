@@ -28,4 +28,5 @@ func SetupRoutes(app *fiber.App) {
 	lifeCircle.Use(middleware.JWTProtected)
 	lifeCircle.Post("/create", handlers.CreateLifeCircle)
 	lifeCircle.Patch("/update", handlers.UpdateLifeCircle)
+	lifeCircle.Get("/", handlers.GetLifeCircle)
 }
