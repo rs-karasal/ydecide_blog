@@ -33,7 +33,7 @@ func Connect() {
 }
 
 func MigrateSchemas() {
-	err := DB.AutoMigrate(&models.User{}, &models.Post{}, &models.LifeCircle{})
+	err := DB.AutoMigrate(&models.User{}, &models.Post{}, &models.LifeCircle{}, &models.UserProfile{})
 	if err != nil {
 		log.Fatalf("failed to migrate schemas: %v", err)
 	}
@@ -63,7 +63,7 @@ func CreateSuperUser() {
 		}
 
 		superDecider := models.User{
-			ID:           nullUUID,
+			UUIDModel:    models.UUIDModel{ID: nullUUID},
 			Username:     superDeciderName,
 			PasswordHash: utils.GeneratePassword(superDeciderPassword),
 		}

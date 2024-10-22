@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"time"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -41,10 +39,9 @@ func CreatePost(c *fiber.Ctx) error {
 	}
 
 	post := models.Post{
-		Title:     req.Title,
-		Content:   req.Content,
-		AuthorID:  authorID,
-		CreatedAt: time.Now(),
+		Title:   req.Title,
+		Content: req.Content,
+		UserID:  &authorID,
 	}
 
 	if result := database.DB.Create(&post); result.Error != nil {
